@@ -3,9 +3,19 @@
 namespace Waavi\ValueObjects\Test;
 
 use Waavi\ValueObjects\Test\Models\Address;
+use Waavi\ValueObjects\Test\Models\Email;
 
 class MutatorTest extends TestCase
 {
+    /**
+     *  @test
+     */
+    public function single_field_value_objects_have_unique_attribute()
+    {
+        $email = new Email('info@waavi.com');
+        $this->assertEquals('info@waavi.com', $email);
+    }
+
     /**
      *  @test
      */
