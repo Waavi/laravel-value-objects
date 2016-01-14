@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/travis/Waavi/laravel-value-objects/master.svg?style=flat-square)](https://travis-ci.org/Waavi/laravel-value-objects)
 [![Total Downloads](https://img.shields.io/packagist/dt/waavi/laravel-value-objects.svg?style=flat-square)](https://packagist.org/packages/waavi/laravel-value-objects)
 
-Allows you to create value objects related to Eloquent Models that are then saved into the database as either plain strings or json encoded.
+Allows you to create value objects in Eloquent Models that are then saved into the database as either plain strings or json encoded.
 
 WAAVI is a web development studio based in Madrid, Spain. You can learn more about us at [waavi.com](http://waavi.com)
 
@@ -19,12 +19,14 @@ You may install the package via composer
 
 ### Using single field value objects
 
-Say you wish to add an Email field to your Customer Model as a Value Object. This would be useful in order to validate the field, get some properties related to this field and keep your code as clean as possible.
+Say you wish to add an Temperature field to a Device eloquent model. You may wish to apply transformations to this field, or get the value in Celsius, Fahrenheit or Kelvin. If you use this type of field in several models, it might become cumbersome to copy paste these functions between all models.
 
-Your Customer Model must use the 'CastsValueObjects' trait, and in the casts array you must add a reference to your Value Object:
+Here is were value objects become very useful. Let's see how. First we created the Device model, which will have a temperature field cast to the Temperature value object and will use the 'CastsValueObjects' trait.
 
 ```php
-    class Customer extends Model
+    use Illuminate\Database\Eloquent\Model;
+
+    class Device extends Model
     {
         use \Waavi\ValueObjects\Traits\CastsValueObjects;
 
@@ -34,46 +36,116 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
          * @var array
          */
         protected $casts = [
-            'email'   => Email::class,
+            'temperature'   => Temperature::class,
         ];
     }
 ```
 
-You may now create an Email class extending from 'ValueObject':
+The Temperature value object will extend from 'Waavi\ValueObjects\Single' and could be defined as follows:
 
 ```php
     use Waavi\ValueObjects\Single;
 
-    class Email extends Single
+    class Temperature extends Single
     {
-        protected $fillable = ['email'];
-
-        public function domain()
+        /**
+         * @return float
+         */
+        public function inCelsius()
         {
-            return substr($this->email, strrpos($this->email, '@') + 1);
+            // In single field value objects, the name of the field is always $value
+            return (float) $this->value;
+        }
+
+        /**
+         * @return float
+         */
+        public function inKelvin()
+        {
+            return (float) $this->value + 273.15;
+        }
+
+        /**
+         * @return float
+         */
+        public function inFahrenheit()
+        {
+            return (float) $this->value * 1.8 + 32;
         }
     }
 ```
 
-Properties of the single variable value object:
+Single field value objects are saved as plain string in the database, and can be uses as follows:
 
 ```php
-    $customer->email = new Email('info@waavi.com'); // Set the customer's email
-    $customer->email = 'info@waavi.com';            // This also works
-    echo $customer->email;              // Prints 'info@waavi.com'
-    echo $customer->email->domain();    // Prints 'waavi.com'
+    $device = new Device;
+    $device->temperature = new Temperature(30);
+    $device->temperature = 30;          // This also works
+    echo $device->temperature;          // Prints '30'
+    echo $device->temperature->value;         // Prints '30'
+    echo $device->temperature->inKelvin();    // Prints 303.15
 ```
 
-The email field will be saved as a string to the database.
+You may also use Accessors and Mutators, just like in Eloquent Models. For example you could rewrite the Temperature class as:
+
+```php
+    use Waavi\ValueObjects\Single;
+
+    class Temperature extends Single
+    {
+        /**
+         *  Make all subzero temperatures equal to zero.
+         *  @return void
+         */
+        public function setValueAttribute($value)
+        {
+            $this->attributes['value'] = $value > 0 ? $value : 0;
+        }
+
+        /**
+         * @return float
+         */
+        public function getCelsiusAttribute()
+        {
+            return (float) $this->value;
+        }
+
+        /**
+         * @return float
+         */
+        public function getKelvinAttribute()
+        {
+            return (float) $this->value + 273.15;
+        }
+
+        /**
+         * @return float
+         */
+        public function getFahrenheitAttribute()
+        {
+            return (float) $this->value * 1.8 + 32;
+        }
+    }
+```
+
+You could then access the temperature properties as follows:
+
+```php
+    $device = new Device;
+    $device->temperature = 30;
+    echo $device->temperature;            // Prints '30'
+    echo $device->temperature->value;     // Prints '30'
+    echo $device->temperature->kelvin;    // Prints 303.15
+```
 
 ### Using multiple fields value objects
 
-Say you have both a Customer and a Store models that both have addresses. In order to work with theses addresses, you would have to replicate methods and attributes among both, which could become cumbersome. In order to simplify this, we can use a common Address Value Object.
-
-Your Customer Model must use the 'CastsValueObjects' trait, and in the casts array you must add a reference to your Value Object:
+Sometimes are value objects might not be so simple, and might require several fields instead of just one. Let's say we have a Trip model with origin and destination fields made up of coordinates. We could then define the Trip model like we did before:
 
 ```php
-    class Customer extends Model
+    use Illuminate\Database\Eloquent\Model;
+
+    class Trip extends Model
     {
         use \Waavi\ValueObjects\Traits\CastsValueObjects;
 
@@ -83,34 +155,44 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
          * @var array
          */
         protected $casts = [
-            'address'   => Address::class,
+            'origin'        => Coordinate::class,
+            'destination'   => Coordinate::class,
         ];
     }
-}
 ```
 
-You may now create an Address class extending from 'ValueObject':
+We would then be able to define the Coordinate value object like:
 
 ```php
-    use use Waavi\ValueObjects\Json;
+    use Waavi\ValueObjects\Json;
 
-    class Address extends Json
+    class Coordinate extends Json
     {
-        protected $fillable = ['street', 'street_number', 'city', 'zip_code', 'country'];
+        protected $fillable = ['lat', 'lng'];
 
-        public function getFormatted()
-        {
-            return "$this->street, $this->street_number, $this->city, $this->zip_code, $this->country";
+        /**
+         *  Return the distance between this coordinate and another
+         *
+         *  @return float
+         */
+        public function distanceTo(Coordinate $coord) {
+            /** Calculate distance **/
+            return $distance;
         }
     }
 ```
 
-Properties of the multiple variable value object:
+Now we need to extend from the 'Waavi\ValueObjects\Json' Value Object, since we will need several fields to represent our Value Object, and we will need to define a fillable array with the names of the fields that are allowed in the value object. This time, the field will be json encoded before being saved.
+
+As before, mutators and accessors are available.
+
+We can work with this model object like so:
 
 ```php
-    $customer->address = new Address(['street' => '...']);  // Set the customer's address
-    echo $customer->address;                    // Prints json representation
-    echo $customer->address->getFormatted();    // Prints the response from getFormatted
+    $trip = new Trip;
+    $trip->origin = new Coordinate(['lat' => 20.1221, 'lng' => 12.1231]);
+    $trip->destination = new Coordinate(['lat' => 10.13, 'lng' => 12.14]);
+    echo $trip->origin;                     // Prints json representation {'lat':'20.1221','lng':'12.1231'}
+    echo $device->origin->lat;              // Prints '20.1221'
+    echo $device->origin->distanceTo($device->destination);      // Prints distance between them.
 ```
-
-The address field will be saved as a json encoded string to the database.

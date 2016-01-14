@@ -14,21 +14,7 @@ abstract class ValueObject implements Jsonable
      */
     protected $attributes = [];
 
-    /**
-     *  Return the Json representation of this value object
-     *
-     *  @param  mixed   $options
-     *  @return string
-     */
-    public function toJson($options = 0)
-    {
-        if (sizeof($this->attributes) > 1) {
-            return json_encode($this->attributes, $options);
-        } else {
-            //var_dump($this->attributes);
-            return current($this->attributes) ?: '';
-        }
-    }
+    abstract public function toJson($options = 0);
 
     /**
      * Set a given attribute on the model.

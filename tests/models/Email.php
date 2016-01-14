@@ -8,6 +8,6 @@ class Email extends Single
 {
     public function domain()
     {
-        return substr($this->email, strrpos($this->email, '@') + 1);
+        return substr($this->value, strrpos($this->value, '@') + 1);
     }
 }

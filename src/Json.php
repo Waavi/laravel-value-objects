@@ -32,4 +32,15 @@ class Json extends ValueObject
             }
         }
     }
+
+    /**
+     *  Return the Json representation of this value object
+     *
+     *  @param  mixed   $options
+     *  @return string
+     */
+    public function toJson($options = 0)
+    {
+        return json_encode($this->attributes, $options);
+    }
 }
