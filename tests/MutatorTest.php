@@ -13,7 +13,7 @@ class MutatorTest extends TestCase
     public function single_field_value_objects_have_unique_attribute()
     {
         $email = new Email('info@waavi.com');
-        $this->assertEquals('info@waavi.com', $email);
+        $this->assertEquals('info@waavi.com', $email->email);
     }
 
     /**

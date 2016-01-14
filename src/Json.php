@@ -11,9 +11,9 @@ class Json extends ValueObject
      */
     protected $fillable = [];
 
-    public function __construct(array $values)
+    public function __construct(array $attributes)
     {
-        $this->fill($values);
+        $this->fill($attributes);
     }
 
     /**

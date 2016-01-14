@@ -41,9 +41,10 @@ abstract class ValueObject implements Jsonable
     {
         if ($this->hasSetMutator($key)) {
             $method = 'set' . Str::studly($key) . 'Attribute';
-            return $this->{$method}($value);
+            $this->{$method}($value);
+        } else {
+            $this->attributes[$key] = $value;
         }
-        $this->attributes[$key] = $value;
         return $this;
     }
 
