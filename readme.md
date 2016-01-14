@@ -37,7 +37,6 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
             'email'   => Email::class,
         ];
     }
-}
 ```
 
 You may now create an Email class extending from 'ValueObject':
@@ -106,7 +105,6 @@ Properties of the multiple variable value object:
 
 ```php
     $customer->address = new Address(['street' => '...']);  // Set the customer's address
-    $customer->address = ['street' => '...'];               // This also works
     echo $customer->address;                    // Prints json representation
     echo $customer->address->getFormatted();    // Prints the response from getFormatted
 ```
