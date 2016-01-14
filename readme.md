@@ -193,6 +193,6 @@ We can work with this model object like so:
     $trip->origin = new Coordinate(['lat' => 20.1221, 'lng' => 12.1231]);
     $trip->destination = new Coordinate(['lat' => 10.13, 'lng' => 12.14]);
     echo $trip->origin;                     // Prints json representation {'lat':'20.1221','lng':'12.1231'}
-    echo $device->origin->lat;              // Prints '20.1221'
-    echo $device->origin->distanceTo($device->destination);      // Prints distance between them.
+    echo $trip->origin->lat;              // Prints '20.1221'
+    echo $trip->origin->distanceTo($trip->destination);      // Prints distance between them.
 ```
