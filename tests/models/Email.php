@@ -2,9 +2,9 @@
 
 namespace Waavi\ValueObjects\Test\Models;
 
-use Waavi\ValueObjects\ValueObject;
+use Waavi\ValueObjects\Single;
 
-class Email extends ValueObject
+class Email extends Single
 {
     public function domain()
     {

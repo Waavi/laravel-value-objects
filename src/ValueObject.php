@@ -4,19 +4,9 @@ namespace Waavi\ValueObjects;
 
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Str;
-use ReflectionClass;
 
-class ValueObject implements Jsonable
+abstract class ValueObject implements Jsonable
 {
-    use CastsValueObjects;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [];
-
     /**
      * The value object's attributes.
      *
@@ -25,28 +15,18 @@ class ValueObject implements Jsonable
     protected $attributes = [];
 
     /**
-     * The attributes that should be cast to native types.
+     *  Return the Json representation of this value object
      *
-     * @var array
+     *  @param  mixed   $options
+     *  @return string
      */
-    protected $casts = [];
-
-    public function __construct($values)
+    public function toJson($options = 0)
     {
-        if (is_array($values)) {
-            $this->fill($values);
+        if (sizeof($this->attributes) > 1) {
+            return json_encode($this->attributes, $options);
         } else {
-            $key = Str::snake((new ReflectionClass(get_class($this)))->getShortName());
-            $this->setAttribute($key, $values);
-        }
-    }
-
-    public function fill($attributes)
-    {
-        foreach ($attributes as $key => $value) {
-            if (in_array($key, $this->fillable)) {
-                $this->setAttribute($key, $value);
-            }
+            //var_dump($this->attributes);
+            return current($this->attributes) ?: '';
         }
     }
 
@@ -76,16 +56,6 @@ class ValueObject implements Jsonable
     public function hasSetMutator($key)
     {
         return method_exists($this, 'set' . Str::studly($key) . 'Attribute');
-    }
-
-    public function toJson($options = 0)
-    {
-        if (sizeof($this->attributes) > 1) {
-            return json_encode($this->attributes, $options);
-        } else {
-            //var_dump($this->attributes);
-            return current($this->attributes) ?: '';
-        }
     }
 
     /**

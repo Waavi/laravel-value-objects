@@ -3,7 +3,7 @@
 namespace Waavi\ValueObjects\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Waavi\ValueObjects\CastsValueObjects;
+use Waavi\ValueObjects\Traits\CastsValueObjects;
 
 class Account extends Model
 {

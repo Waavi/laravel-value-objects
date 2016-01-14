@@ -1,6 +1,6 @@
 <?php
 
-namespace Waavi\ValueObjects;
+namespace Waavi\ValueObjects\Traits;
 
 trait CastsValueObjects
 {

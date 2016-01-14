@@ -26,7 +26,7 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
 ```php
     class Customer extends Model
     {
-        use \Waavi\ValueObjects\CastsValueObjects;
+        use \Waavi\ValueObjects\Traits\CastsValueObjects;
 
         /**
          * The attributes that should be casted to native types.
@@ -42,7 +42,9 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
 You may now create an Email class extending from 'ValueObject':
 
 ```php
-    class Email extends ValueObject
+    use Waavi\ValueObjects\Single;
+
+    class Email extends Single
     {
         protected $fillable = ['email'];
 
@@ -73,7 +75,7 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
 ```php
     class Customer extends Model
     {
-        use \Waavi\ValueObjects\CastsValueObjects;
+        use \Waavi\ValueObjects\Traits\CastsValueObjects;
 
         /**
          * The attributes that should be casted to native types.
@@ -90,7 +92,9 @@ Your Customer Model must use the 'CastsValueObjects' trait, and in the casts arr
 You may now create an Address class extending from 'ValueObject':
 
 ```php
-    class Address extends ValueObject
+    use use Waavi\ValueObjects\Json;
+
+    class Address extends Json
     {
         protected $fillable = ['street', 'street_number', 'city', 'zip_code', 'country'];
 

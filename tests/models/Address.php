@@ -2,9 +2,9 @@
 
 namespace Waavi\ValueObjects\Test\Models;
 
-use Waavi\ValueObjects\ValueObject;
+use Waavi\ValueObjects\Json;
 
-class Address extends ValueObject
+class Address extends Json
 {
     protected $fillable = ['street', 'city', 'country'];
 
