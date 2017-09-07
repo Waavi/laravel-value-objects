@@ -19,7 +19,7 @@ class CastingTest extends TestCase
             'name'  => $name,
             'email' => new Email($email),
         ]);
-        $this->seeInDatabase('accounts', ['name' => 'example', 'email' => 'info@waavi.com']);
+        $this->assertDatabaseHas('accounts', ['name' => 'example', 'email' => 'info@waavi.com']);
     }
 
     /**
@@ -53,7 +53,7 @@ class CastingTest extends TestCase
             'name'    => $name,
             'address' => new Address($address),
         ]);
-        $this->seeInDatabase('accounts', ['name' => 'example', 'address' => json_encode($address)]);
+        $this->assertDatabaseHas('accounts', ['name' => 'example', 'address' => json_encode($address)]);
     }
 
     /**

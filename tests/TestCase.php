@@ -50,7 +50,7 @@ abstract class TestCase extends Orchestra
      */
     protected function setUpDatabase($app)
     {
-        $this->artisan('migrate', ['--realpath' => realpath(__DIR__ . '/../database/migrations')]);
+        $this->artisan('migrate', ['--path' => realpath(__DIR__ . '/../database/migrations')]);
 
         $app['db']->connection()->getSchemaBuilder()->create('accounts', function (Blueprint $table) {
             $table->increments('id');
