@@ -13,7 +13,7 @@ trait CastsValueObjects
      */
     protected function castAttribute($key, $value)
     {
-        if (!class_exists($this->casts[$key])) {
+        if (!key_exists($key, $this->casts) || !class_exists($this->casts[$key])) {
             return parent::castAttribute($key, $value);
         }
 
