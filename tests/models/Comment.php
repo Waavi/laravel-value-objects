@@ -4,6 +4,7 @@ namespace Waavi\ValueObjects\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Waavi\ValueObjects\Traits\CastsValueObjects;
 
 class Comment extends Model
@@ -32,9 +33,9 @@ class Comment extends Model
     {
         return $this->belongsTo(Post::class);
     }
-    //
-    //public function author() : HasOne
-    //{
-    //    return $this->hasOne(Author::class);
-    //}
+
+    public function author() : HasOne
+    {
+        return $this->hasOne(Person::class);
+    }
 }

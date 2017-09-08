@@ -15,11 +15,6 @@ abstract class TestCase extends Orchestra
         $this->setUpDatabase($this->app);
     }
 
-    public function tearDown()
-    {
-        parent::tearDown();
-    }
-
     /**
      * @param \Illuminate\Foundation\Application $app
      *
@@ -97,8 +92,8 @@ abstract class TestCase extends Orchestra
             $table->increments('id');
             $table->text('text')->nullable();
             $table->timestamp('date');
-            $table->timestamp('post_id')->nullable();
-            //$table->timestamp('author');
+            $table->integer('post_id')->nullable();
+            $table->integer('author_id')->nullable();
             $table->timestamps();
         });
     }

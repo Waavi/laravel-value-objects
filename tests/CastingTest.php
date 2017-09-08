@@ -92,13 +92,20 @@ class CastingTest extends TestCase
 
         $this->assertDatabaseHas('people', ['first_name' => 'Jane', 'last_name' => 'Doe', 'email' => 'owner@example.com']);
 
-        $author = Person::create([
+        $postAuthor = Person::create([
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => new Email('author@example.com'),
         ]);
 
+        $commentAuthor = Person::create([
+            'first_name' => 'Bob',
+            'last_name' => 'Doe',
+            'email' => new Email('author@example.com'),
+        ]);
+
         $this->assertDatabaseHas('people', ['first_name' => 'John', 'last_name' => 'Doe', 'email' => 'author@example.com']);
+        $this->assertDatabaseHas('people', ['first_name' => 'Bob', 'last_name' => 'Doe', 'email' => 'author@example.com']);
 
         $blog = new Blog();
         $blog->title = 'My new blog';
@@ -112,11 +119,12 @@ class CastingTest extends TestCase
             'text' => 'Lorem Ipsum',
             'date' => $now,
         ]);
+        $comment->author()->save($commentAuthor);
 
         $post = new Post();
         $post->title = 'Hello World';
         $post->text = 'Lorem Ipsum';
-        $post->author()->save($author);
+        $post->author()->save($postAuthor);
         $post->comments()->save($comment);
         $post->blog()->associate($blog);
         $post->save();
